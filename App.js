@@ -1,20 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { UserProvider } from "./src/context/userContext";
+import { NotifiProvider } from './src/context/notifiContext';
+import 'react-native-gesture-handler';
+
+import AppNav from "./src/navigation/index";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <UserProvider>
+      <NotifiProvider>
+        <AppNav />
+      </NotifiProvider>
+    </UserProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
