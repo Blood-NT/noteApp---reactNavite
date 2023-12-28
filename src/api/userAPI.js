@@ -2,7 +2,7 @@ import axios from "axios";
 import { format } from 'date-fns';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ca } from "date-fns/locale";
-const userAPI = "http://10.262.5.31:8083/user";
+const userAPI = "http://192.168.2.11:8083/user";
 
 
 

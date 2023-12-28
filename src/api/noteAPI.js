@@ -1,5 +1,5 @@
 import axios from "axios";
-const urlApi = "http://192.168.1.32:8083"
+const urlApi = "http://192.168.2.11:8083"
 
 const createNote = async(note) => {
     const body={
