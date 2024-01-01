@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, StyleSheet, Button, Platform, KeyboardAvoidingView, SafeAreaView, ScrollView, View } from "react-native";
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor";
 
@@ -8,16 +8,16 @@ import * as ImagePicker from 'expo-image-picker';
 import { uploadImage } from "../ultis/uploadFile";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { set } from "date-fns";
-import { getDataNote } from "../api/noteAPI";
+import { getDataNote, updateNote } from "../api/noteAPI";
 import RightMenu from "../components/rightMenu";
-
-
+import { userContext } from '../context/userContext';
+import {notifiContext} from '../context/notifiContext';
 const NoteDataScreen = () => {
-
+const {user, setUser} = useContext(userContext);
   // nhaanj route params
   const route = useRoute();
   const navigation = useNavigation();
-
+const {setNotifi} = useContext(notifiContext);
   const { nid, title, color } = route.params;
   const [checkColor, setCheckColor] = useState(color || "white");
 
@@ -35,15 +35,30 @@ const NoteDataScreen = () => {
     fecthData();
   }, [])
 
-  const handleSave = () => {
+
+  const handleSave = async() => {
 
     console.log("saveee", contentHtml);
-    setCheckColor("pink");
+    const res = await updateNote(nid,user.uid,contentHtml)
+    console.log("res",res);
+    if(res.statusCode === 200){
+      setNotifi(["Đã lưu"]);
+      console.log("Đã lưu");
+    }
+    else{
+      setNotifi(["Lưu thất bại"]);
+    }
+    // setCheckColor("pink");
+
     // navigation.goBack();
   }
   const handelReload = () => {
-    setCheckColor("pink");
-    // richText.current?.insertText("klkokok")/ caapj nhaat
+    const fecthData = async () => {
+      const res = await getDataNote(nid);
+      console.log("getdatanote", res.data.data);
+      setText(res.data.data.content);
+    }
+    fecthData();
   }
   const pickpicture = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({

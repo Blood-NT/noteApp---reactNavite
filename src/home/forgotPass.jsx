@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
+import { forgotPassword } from '../api/userAPI';
+import { notifiContext } from '../context/notifiContext';
 
 export default function ForgotPassScreen() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
-
+  const { setNotifi } = useContext(notifiContext);
   const handleLogin = async () => {
     // Xử lý đăng nhập ở đây (kiểm tra tên người dùng và mật khẩu, gọi API, vv.)
     // Nếu đăng nhập thành công, lưu trạng thái đăng nhập
@@ -15,10 +17,17 @@ export default function ForgotPassScreen() {
       setEmail('');
       return;
     }
-    await SecureStore.setItemAsync('isLoggedIn', 'true');
-    
-    // Chuyển đến trang Home
-    navigation.navigate('Home');
+    const res = await forgotPassword(email);
+    if (res.statusCode === 220) {
+      console.log("doneee, res", res);
+      setNotifi(['vui lòng kiểm tra email để lấy lại mật khẩu']);
+
+      navigation.navigate('Login');
+    }
+    else {
+      setNotifi(['email không tồn tại']);
+      console.log("error");
+    }
   };
 
   return (
@@ -40,7 +49,7 @@ export default function ForgotPassScreen() {
       >
         <Text style={styles.registerButtonText}>quay lại đăng nhập</Text>
       </TouchableOpacity>
-    
+
     </View>
   );
 }

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity,StyleSheet } from 'react-native';
+import React, { useState,useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
 import { Register } from '../api/userAPI';
+import { notifiContext } from '../context/notifiContext';
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -10,6 +11,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [rePassword, setRePassword] = useState('');
   const [email, setEmail] = useState('');
+  const { setNotifi } = useContext(notifiContext);
   const handleRegister = async () => {
     console.log("click register");
     // kiểm tra các ô input
@@ -18,7 +20,7 @@ export default function RegisterScreen() {
       return;
     }
     //usename không được chứa ký tự đặc biệt
-  
+
 
     if (!password) {
       console.log("password");
@@ -37,16 +39,13 @@ export default function RegisterScreen() {
       return;
     }
     // mật khẩu chỉ được số hoặc chữ cái
-  
+
     // email phải có @ và .
     if (!email.includes('@') || !email.includes('.')) {
       console.log("email2");
       setEmail('');
       return;
     }
-
-
-
     // neeus maatj khaaur vaf nhaapj laij khoong trungf nhau thif thongg baoos
     if (password != rePassword) {
       console.log("password3");
@@ -57,11 +56,21 @@ export default function RegisterScreen() {
     console.log("SentData");
     const res = await Register(username, password, email);
     console.log("click register done", res);
+    if (res.statusCode === 210) {
+      console.log("doneee, res", res);
+      setNotifi(['Đăng ký thành công, vui lòng xác thực email']);
+      await SecureStore.setItemAsync('isLoggedIn', 'true');
+      // Chuyển đến trang Home
+      navigation.navigate('Login');
+    }
+    else {
+      console.log("error");
+      setNotifi(['Đăng ký thất bại']);
+    }
+
     // Xử lý đăng nhập ở đây (kiểm tra tên người dùng và mật khẩu, gọi API, vv.)
     // Nếu đăng nhập thành công, lưu trạng thái đăng nhập
-    await SecureStore.setItemAsync('isLoggedIn', 'true');
-    // Chuyển đến trang Home
-    navigation.navigate('Login');
+  
   };
 
   return (

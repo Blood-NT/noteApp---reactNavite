@@ -2,7 +2,7 @@ import axios from "axios";
 import { format } from 'date-fns';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ca } from "date-fns/locale";
-const userAPI = "http://192.168.2.11:8083/user";
+const userAPI = "http://192.168.1.160:8083/user";
 
 
 
@@ -48,10 +48,41 @@ const Register = async(userName, password,email)=>{
 }
 }
 
+
+
+const forgotPassword = async (email) => {
+  try {
+    const res = await axios.post(`${userAPI}/forgot-password`, {
+      email: email,
+    });
+    return res.data;
+  } catch (error) {
+    console.log(`${error}`);
+  }
+};
+
+const changePassword = async (uid, oldPass, newPass) => {
+  const data = {
+    uid: uid,
+    oldPass: oldPass,
+    newPass: newPass
+  }
+  try {
+    const res = await axios.post(`${userAPI}/change-password`, data);
+    return res.data;
+  } catch (error) {
+    console.log(`${error}`);
+  }
+}
+
+
+
 // viết hàm xóa user
   
 export {
   login,
   loginByToken,
-  Register
+  Register,
+  forgotPassword,
+  changePassword
 };
